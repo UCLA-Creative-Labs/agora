@@ -18,6 +18,27 @@ router.get('/:username', async (req, res) => {
 	res.status(200).send(payload)
 })
 
+router.get('/unreviewed', async (req, res) => {
+	const { amount, offset } = req.query
+	if (!amount) {
+		amount = 64
+	}
+	if (!offset) {
+		offset = 0
+	}
+	const { rows } = await db.query('SELECT TOP $1 FROM apps WHERE submitted=$2 AND reviewed=$3 AND ROWNUM > $4', amount, true, false, offset)
+	let payload = {}
+
+	if (rows === undefined || !rows.length) {
+		payload.err = "No unreviewed applications"
+		res.status(404).send(payload)
+	}
+
+	payload.apps = rows
+
+	res.status(200).send(payload)
+})
+
 router.post('/new', async (req, res) => {
 	const newApp = req.body
 	let payload = {}
