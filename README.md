@@ -6,12 +6,14 @@ You must have postgres running and have a database called "cl_db".
 
 ## Setup
 
-```npm build
+```
+npm build
 ```
 
 ## Dev instructions
 
 To start the server, run 
 
-```npm start
+```
+npm start
 ```
