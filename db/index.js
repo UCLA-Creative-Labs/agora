@@ -13,20 +13,7 @@ const query = async (text, params) => {
 		throw err
 	}
 }
-// pool.connect().then(client => {
-// 	return client.query()
-// 			.then((result) => {
-// 					client.release();
-// 					console.log(result.rows)
-// 					callback(null, result.rows[0]);
-// 			})
-// 			.catch(err => {
-// 					client.release();
-// 					callback(err, null);
-// 			});
-// }).catch(err=>{
-// 	console.log("Issue",err)
-// })
+
 module.exports = {
 	query: query,
 }
