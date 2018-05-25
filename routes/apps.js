@@ -4,18 +4,18 @@ const router = new Router();
 const db = require('../db');
 
 router.get('/:username', async (req, res) => {
-	const { username } = req.params
-	const { rows } = await db.query('SELECT * FROM apps WHERE username=$1', [username])
-	let payload = {}
+	const { username } = req.params;
+	const { rows } = await db.query('SELECT * FROM apps WHERE username=$1', [username]);
+	let payload = {};
 
 	if(rows === undefined || !rows.length){
-		payload.err = "User not found."
-		res.status(404).send(payload)
+		payload.err = "User not found.";
+		res.status(404).send(payload);
 	}
 
-	payload.user = rows[0]
+	payload.user = rows[0];
 
-	res.status(200).send(payload)
+	res.status(200).send(payload);
 })
 
 router.post('/new', async (req, res) => {

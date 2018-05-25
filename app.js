@@ -1,11 +1,14 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 const bcrypt = require('bcrypt')
+const passport = require("passport");
+
 const app = express();
 const mountRoutes = require('./routes');
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
+app.use(passport.initialize());
 
 /* cross origin */
 app.use(function(req, res, next) {
@@ -30,7 +33,6 @@ app.use(function(err, req, res, next) {
 
 	// render the error page
 	res.status(err.status || 500);
-	res.render('error');
 });
 
 app.listen(3000);
