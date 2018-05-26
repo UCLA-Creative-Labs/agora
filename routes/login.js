@@ -15,30 +15,27 @@ const passportJWT = require("passport-jwt");
 const ExtractJwt = passportJWT.ExtractJwt;
 const JwtStrategy = passportJWT.Strategy;
 
-var jwtOptions = {}
+let jwtOptions = {}
 jwtOptions.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
-jwtOptions.secretOrKey = 'gigantic_cock';
+jwtOptions.secretOrKey = 'gigantic_cock'; //USE ENV VAR FOR DEPLOYMENT (or separate file)
 
 const strategy = new JwtStrategy(jwtOptions, async (jwt_payload, next) => {
   console.log('payload received', jwt_payload);
 
+  const adminQuery = await db.query('SElECT * FROM admins WHERE id=$1', [jwt_payload.id]);
 
-  const user = users[_.findIndex(users, {id: jwt_payload.id})];
-  const user2 = await db.query('SElECT * FROM admins WHERE id=$1', [jwt_payload.id]);
-
-	if(!user2.rowCount){
+	if(!adminQuery.rowCount){
 		next(null, false);
 	}
 
-  console.log('USER: ', user);
-  console.log('USER2: ', user2.rows[0]);
-
-  if (user) {
-    next(null, user);
+  if (adminQuery.rows[0]) {
+    next(null, adminQuery.rows[0]);
   } else {
     next(null, false);
   }
 });
+
+passport.use(strategy);
 
 router.post('/', async (req, res) => {
 
@@ -52,24 +49,22 @@ router.post('/', async (req, res) => {
     res.status(401).json({message:"no such user found"});
   }
 
-  const user = admin_query.rows[0];
+  const admin = admin_query.rows[0];
 
-  // TODO: use bcrypt to check passwords
-  if(user.password === req.body.password) {
-    // only identify with id from now on
-    var payload = {id: user.id};
-    var token = jwt.sign(payload, jwtOptions.secretOrKey);
-    res.json({message: "ok", token: token});
-  } else {
-    res.status(401).json({message:"passwords did not match"});
-  }
+	await bcrypt.compare(password, admin.password, function(err, resp) {
+	  if(resp) {	
+      const payload = {id: admin.id};
+      const token = jwt.sign(payload, jwtOptions.secretOrKey);
+	  	res.status(200).json({message: "ok", token: token});
+	  } else {
+      res.status(401).json({message:"passwords do not match"});
+    } 
+	});
 });
 
 //example endpoint that needs authentication/authorization
 router.get('/secret', passport.authenticate('jwt', { session: false }), async (req, res) => {
   res.json("Success! You can not see this without a token");
 });
-
-passport.use(strategy);
 
 module.exports = router;

@@ -8,7 +8,23 @@ const client = new Client({
 client.connect();
 
 client.query(
-	'CREATE TABLE admins(last_name VARCHAR(50), first_name VARCHAR(50), email VARCHAR(50) UNIQUE, password VARCHAR(150), username VARCHAR(50) UNIQUE)', 
+	'DROP TABLE admins',
+	(err, res) => {
+		if(err) {
+			console.log(err)
+		}
+});
+
+client.query(
+	'DROP TABLE apps',
+	(err, res) => {
+		if(err) {
+			console.log(err)
+		}
+});
+
+client.query(
+	'CREATE TABLE admins(id serial PRIMARY KEY, last_name VARCHAR(50), first_name VARCHAR(50), email VARCHAR(50) UNIQUE, password VARCHAR(150), username VARCHAR(50) UNIQUE)', 
 	(err, res) => {
 		if (err) {
 			console.log(err)
@@ -16,7 +32,7 @@ client.query(
 });
 
 client.query(
-	'CREATE TABLE apps(last_name VARCHAR(50), first_name VARCHAR(50), email VARCHAR(50) UNIQUE, password VARCHAR(150), username VARCHAR(50) UNIQUE, response TEXT)', 
+	'CREATE TABLE apps(id serial PRIMARY KEY, last_name VARCHAR(50), first_name VARCHAR(50), email VARCHAR(50) UNIQUE, password VARCHAR(150), username VARCHAR(50) UNIQUE, response TEXT)', 
 	(err, res) => {
 		if (err) {
 			console.log(err)
