@@ -6,7 +6,7 @@ database: 'cl_db',
 
 const query = async (text, params) => {
 	try {
-		const client = await pool.connect()
+		const client = await pool.connect();
 		const res = await client.query(text, params)
 		return res
 	} catch(err) {
