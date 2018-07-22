@@ -46,7 +46,6 @@ passport.use('jwt-1', strategy);
  * }
 */
 router.post('/', async (req, res) => {
-
   if(req.body.username && req.body.password){
     var username = req.body.username;
     var password = req.body.password;
