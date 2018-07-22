@@ -19,9 +19,10 @@ let jwtOptions = {}
 jwtOptions.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
 jwtOptions.secretOrKey = 'gigantic_cock'; //USE ENV VAR FOR DEPLOYMENT (or separate file)
 
+/* accepts requests with Header:
+      Authorization: 'Bearer ' + TOKEN_HERE
+*/
 const strategy = new JwtStrategy(jwtOptions, async (jwt_payload, next) => {
-  console.log('payload received', jwt_payload);
-
   const adminQuery = await db.query('SElECT * FROM admins WHERE id=$1', [jwt_payload.id]);
 
 	if(!adminQuery.rowCount){
@@ -35,10 +36,16 @@ const strategy = new JwtStrategy(jwtOptions, async (jwt_payload, next) => {
   }
 });
 
-passport.use(strategy);
+passport.use('jwt-1', strategy);
 
+/* login route
+ * req.body expected:
+ * {
+ *  username: string,
+ *  password: string
+ * }
+*/
 router.post('/', async (req, res) => {
-
   if(req.body.username && req.body.password){
     var username = req.body.username;
     var password = req.body.password;
@@ -62,9 +69,41 @@ router.post('/', async (req, res) => {
 	});
 });
 
-//example endpoint that needs authentication/authorization
-router.get('/secret', passport.authenticate('jwt', { session: false }), async (req, res) => {
+/* NOTICE: delete route for production */
+router.post('/bypass', async (req, res) => {
+	const admin = req.body;
+	let payload = {};
+
+	const query = await db.query('SELECT * FROM admins WHERE username=$1', [admin.username]);
+
+  if ( query.rowCount ) {
+		payload.err = "Admin with that username already exists.";
+		res.status(404).send(payload);
+	}
+
+	const hash = await bcrypt.hash(admin.password, 10);
+	const params = [ admin.last_name, admin.first_name, admin.email, hash, admin.username ];
+
+	const insertQuery = await db.query('INSERT INTO admins (last_name, first_name, email, password, username) VALUES ($1, $2, $3, $4, $5)', params);
+
+  if (insertQuery.err) {
+    res.status(500).send(insertQuery.err.detail);
+  }
+
+  if ( !insertQuery.rowCount ) {
+		payload.err = "Admin not created.";
+		res.status(500).send(payload);
+	}
+
+  res.status(201).send("Admin created");
+});
+
+// example endpoint that needs authentication/authorization
+router.get('/secret', passport.authenticate('jwt-1', { session: false }), async (req, res) => {
   res.json("Success! You can not see this without a token");
 });
 
-module.exports = router;
+module.exports = {
+  login: router, 
+  passport
+};
