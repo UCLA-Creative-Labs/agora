@@ -5,6 +5,7 @@ const passport = require("passport");
 
 const app = express();
 const mountRoutes = require('./routes');
+const port = 3000;
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
@@ -35,4 +36,4 @@ app.use(function(err, req, res, next) {
 	res.status(err.status || 500);
 });
 
-app.listen(3000);
+app.listen(port);

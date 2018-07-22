@@ -2,18 +2,17 @@
 
 ## Requirements
 
-You must have postgres running and have a database called "cl_db".
+You must have postgres running and have a database called "cl_db" and yarn.
 
 ## Setup
-
+Fetch new tables
 ```
-npm build
+$ yarn build
 ```
 
 ## Dev instructions
-
 To start the server, run 
 
 ```
-npm start
+$ yarn start
 ```
