@@ -31,9 +31,9 @@ router.post('/', passport.authenticate('jwt-1', { session: false }), async (req,
 
 	const insertQuery = await db.query('INSERT INTO admins (last_name, first_name, email, password, username) VALUES ($1, $2, $3, $4, $5)', params);
 
-  if (insertQuery.err) {
-    res.status(500).send(insertQuery.err.detail);
-  }
+	if (insertQuery.err) {
+		res.status(500).send(insertQuery.err.detail);
+	}
 
   if ( !insertQuery.rowCount ) {
 		payload.err = "Admin not created.";
