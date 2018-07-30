@@ -8,26 +8,29 @@ const {strings} = require('../utils/index');
 /* fetches all applications */
 router.put('/', async (req, res) => {
   const { years } = req.body;
+  const params = [];
 
-  // TO DO dont do this;
-  let yearsArray = [1,2,3,4];
+  const SQLStrings = [];
+  let SQLString = 'SELECT * FROM apps';
+  let flag = false;
+
   if (years) {
-    yearsArray = strings().toArray(years, Number);
+    params.push(strings().toArray(years, Number));
+    SQLStrings.push('year=ANY($1::int[])');
   }
 
-  const appQuery = await db.query('SELECT * FROM apps WHERE year=ANY($1::int[])', [yearsArray]);
+  if (SQLStrings.length) {
+    SQLString += ' WHERE '
+    SQLString += SQLStrings.join(' ');
+  }
+
+  const appQuery = await db.query(SQLString, params);
+  let payload = {};
 
   if (appQuery.err) {
     console.log(appQuery.err);
 		res.status(500).send(appQuery.err);
   }
-
-	let payload = {};
-
-	if(appQuery.rows === undefined || !appQuery.rows.length){
-		payload.err = "No apps found.";
-		res.status(404).send(payload);
-	}
 
 	payload.apps = appQuery.rows;
 
