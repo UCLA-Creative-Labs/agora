@@ -3,21 +3,34 @@ const router = new Router();
 
 const db = require('../db');
 const {passport} = require('./login');
+const {strings} = require('../utils/index');
 
 /* fetches all applications */
-router.get('/', passport.authenticate('jwt-1', { session: false }), async (req, res) => {
-  const appQuery = await db.query('SELECT * FROM apps');
+router.put('/', async (req, res) => {
+  const { years } = req.body;
+  const params = [];
 
-  if (appQuery.err) {
-		res.status(500).send(appQuery.err.detail);
+  const SQLStrings = [];
+  let SQLString = 'SELECT * FROM apps';
+  let flag = false;
+
+  if (years) {
+    params.push(strings().toArray(years, Number));
+    SQLStrings.push('year=ANY($1::int[])');
   }
 
-	let payload = {};
+  if (SQLStrings.length) {
+    SQLString += ' WHERE '
+    SQLString += SQLStrings.join(' ');
+  }
 
-	if(appQuery.rows === undefined || !appQuery.rows.length){
-		payload.err = "No apps found.";
-		res.status(404).send(payload);
-	}
+  const appQuery = await db.query(SQLString, params);
+  let payload = {};
+
+  if (appQuery.err) {
+    console.log(appQuery.err);
+		res.status(500).send(appQuery.err);
+  }
 
 	payload.apps = appQuery.rows;
 
@@ -46,28 +59,18 @@ router.get('/:username', passport.authenticate('jwt-1', { session: false }), asy
 })
 
 router.post('/', async (req, res) => {
-	const newApp = req.body
-	let payload = {}
+  const newApp = req.body
 
-	const user = await db.query('SELECT * FROM apps WHERE username=$1', [newApp.username])
-
-  if (user.err) {
-	  res.status(500).send(user.err.detail);
-  }
-
-	if(user.rowCount){
-		payload.err = 'User already exists.'
-		res.status(404).send(payload)
-	}
-
-	const params = [ newApp.last_name, newApp.first_name, newApp.email, newApp.username, newApp.response ]
-  const appQuery = await db.query('INSERT INTO apps (last_name, first_name, email, username, response) VALUES ($1, $2, $3, $4, $5)', params)
+  const params = [ newApp.last_name, newApp.first_name, newApp.email, 
+                   newApp.response, newApp.year, newApp.first_choice ];
+  const createAppQuery = await db.query('INSERT INTO apps (last_name, first_name, email, response, year, first_choice) VALUES ($1, $2, $3, $4, $5, $6)', params);
   
-  if (appQuery.err) {
-	  res.status(500).send(appQuery.err.detail);
-  }
 
-  res.send(appQuery.rows[0])
+  if (createAppQuery.err) {
+	  res.status(500).send(createAppQuery.err);
+  }
+  
+  res.status(201).send();
 })
 
 module.exports = router;
