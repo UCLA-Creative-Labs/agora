@@ -5,23 +5,38 @@ const db = require('../db');
 const {passport} = require('./login');
 const {strings} = require('../utils/index');
 
-/* fetches all applications */
-router.put('/', async (req, res) => {
-  const { years } = req.body;
+/* generic application fetching */
+router.get('/', async (req, res) => {
+  const { years, firstChoice, secondChoice, thirdChoice } = req.query;
   const params = [];
 
   const SQLStrings = [];
   let SQLString = 'SELECT * FROM apps';
-  let flag = false;
+  let filterCount = 0;
 
   if (years) {
     params.push(strings().toArray(years, Number));
-    SQLStrings.push('year=ANY($1::int[])');
+    SQLStrings.push(`year=ANY($${++filterCount}::int[])`);
+  }
+
+  if (firstChoice) {
+    params.push(firstChoice);
+    SQLStrings.push(`first_choice=$${++filterCount}`);
+  }
+
+  if (secondChoice) {
+    params.push(secondChoice);
+    SQLStrings.push(`second_choice=$${++filterCount}`);
+  }
+
+  if (thirdChoice) {
+    params.push(thirdChoice);
+    SQLStrings.push(`third_choice=$${++filterCount}`);
   }
 
   if (SQLStrings.length) {
-    SQLString += ' WHERE '
-    SQLString += SQLStrings.join(' ');
+    SQLString += ' WHERE ';
+    SQLString += SQLStrings.join(' AND ');
   }
 
   const appQuery = await db.query(SQLString, params);
