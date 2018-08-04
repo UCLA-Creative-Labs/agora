@@ -23,16 +23,39 @@ client.query(
 		}
 });
 
+const createAdminSQLString = `
+	CREATE TABLE admins(
+    id serial PRIMARY KEY,
+    last_name VARCHAR(50),
+    first_name VARCHAR(50),
+    email VARCHAR(50) UNIQUE,
+    password VARCHAR(150),
+    username VARCHAR(50) UNIQUE
+  )`;
+
 client.query(
-	'CREATE TABLE admins(id serial PRIMARY KEY, last_name VARCHAR(50), first_name VARCHAR(50), email VARCHAR(50) UNIQUE, password VARCHAR(150), username VARCHAR(50) UNIQUE)', 
+	createAdminSQLString, 
 	(err, res) => {
 		if (err) {
 			console.log(err)
 		}
 });
 
+const createAppSQLString = `
+	CREATE TABLE apps(
+		id serial PRIMARY KEY,
+		last_name VARCHAR(50),
+		first_name VARCHAR(50),
+		email VARCHAR(50),
+		response TEXT,
+		year INTEGER,
+    first_choice VARCHAR(50),
+    second_choice VARCHAR(50),
+    third_choice VARCHAR(50)
+  )`;
+
 client.query(
-	'CREATE TABLE apps(id serial PRIMARY KEY, last_name VARCHAR(50), first_name VARCHAR(50), email VARCHAR(50), response TEXT, year INTEGER, first_choice VARCHAR(50))', 
+  createAppSQLString,
 	(err, res) => {
 		if (err) {
 			console.log(err)
