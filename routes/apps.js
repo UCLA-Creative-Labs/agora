@@ -7,7 +7,7 @@ const {strings} = require('../utils/index');
 
 /* generic application fetching */
 router.get('/', async (req, res) => {
-  const { years, firstChoice, secondChoice, thirdChoice } = req.query;
+  const { years, firstChoice, secondChoice, thirdChoice, limit, offset } = req.query;
   const params = [];
 
   const SQLStrings = [];
@@ -38,6 +38,13 @@ router.get('/', async (req, res) => {
     SQLString += ' WHERE ';
     SQLString += SQLStrings.join(' AND ');
   }
+
+  if (limit)  params.push(limit);
+  if (offset) params.push(offset);
+
+  SQLString += ` ORDER BY id`;
+  SQLString += ` LIMIT ${limit ? '$'.concat(++filterCount): 400}`;
+  SQLString += ` OFFSET ${offset ? '$'.concat(++filterCount): 0}`;
 
   const appQuery = await db.query(SQLString, params);
   let payload = {};
