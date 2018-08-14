@@ -5,7 +5,7 @@ const passport = require("passport");
 
 const app = express();
 const mountRoutes = require('./routes');
-const port = 3000;
+const port = 3001;
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
