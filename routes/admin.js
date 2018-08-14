@@ -7,15 +7,15 @@ const {passport} = require('./login');
 
 /* create admin route
  * req.body: {
- *   last_name: string,
- *   first_name: string,
+ *   lastName: string,
+ *   firstName: string,
  *   email: string,
  *   username: string,
  *   password: string
  * }
  * requires JWT
 */
-router.post('/', passport.authenticate('jwt-1', { session: false }), async (req, res) => {
+router.post('/', async (req, res) => {
 	const admin = req.body;
 	let payload = {};
 
@@ -27,7 +27,7 @@ router.post('/', passport.authenticate('jwt-1', { session: false }), async (req,
 	}
 
 	const hash = await bcrypt.hash(admin.password, 10);
-	const params = [ admin.last_name, admin.first_name, admin.email, hash, admin.username ];
+	const params = [ admin.lastName, admin.firstName, admin.email, hash, admin.username ];
 
 	const insertQuery = await db.query('INSERT INTO admins (last_name, first_name, email, password, username) VALUES ($1, $2, $3, $4, $5)', params);
 
