@@ -6,7 +6,7 @@ const {passport} = require('./login');
 const {strings} = require('../utils/index');
 
 /* generic application fetching */
-router.get('/', async (req, res) => {
+router.post('/fetch', async (req, res) => {
   const { years, firstChoice, secondChoice, thirdChoice, limit = 400, offset = 0 } = req.query;
   const params = [];
 
@@ -80,7 +80,7 @@ router.get('/:username', passport.authenticate('jwt-1', { session: false }), asy
   res.status(200).send(payload);
 })
 
-router.post('/', async (req, res) => {
+router.post('/create', async (req, res) => {
   const newApp = req.body
 
   const params = [ newApp.last_name, newApp.first_name, newApp.email, 
