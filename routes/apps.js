@@ -3,14 +3,13 @@ const router = new Router();
 
 const db = require('../db');
 const {passport} = require('./login');
-const {strings} = require('../utils/index');
-const ApplicationsInstance = require('../db/application');
+const ApplicationsInstance = require('../db/applications');
 const {StatusCodes} = require('./constants.js');
 
 /* generic application fetching */
 router.post('/fetch', async (req, res) => {
   try {
-    const fetchQuery = await ApplicationsInstance.fetchApplications(req.query);
+    const fetchQuery = await ApplicationsInstance.fetchApplications(req.body);
 
     if (fetchQuery.err) {
       res.status(StatusCodes.INTERNAL_SERVICE_ERROR).send(fetchQuery.err);
@@ -47,7 +46,7 @@ router.post('/create', async (req, res) => {
   const newApp = req.body
 
   try {
-    const createAppQuery = await ApplicationsInstance.createApplications(newApp);
+    const createAppQuery = await ApplicationsInstance.createApplication(newApp);
 
     if (createAppQuery.err) {
       res.status(StatusCodes.INTERNAL_SERVICE_ERROR).send(createAppQuery.err);
