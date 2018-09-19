@@ -4,60 +4,22 @@ const router = new Router();
 const db = require('../db');
 const {passport} = require('./login');
 const {strings} = require('../utils/index');
-const ApplicationInstance = require('../db/applications');
+const ApplicationsInstance = require('../db/application');
+const {StatusCodes} = require('./constants.js');
 
 /* generic application fetching */
 router.post('/fetch', async (req, res) => {
-  const { years, firstChoice, secondChoice, thirdChoice, limit = 400, offset = 0 } = req.query;
-  const params = [];
+  try {
+    const fetchQuery = await ApplicationsInstance.fetchApplications(req.query);
 
-  const SQLStrings = [];
-  let SQLString = 'SELECT * FROM apps';
-  let filterCount = 0;
-
-  if (years) {
-    params.push(strings().toArray(years, Number));
-    SQLStrings.push(`year=ANY($${++filterCount}::int[])`);
+    if (fetchQuery.err) {
+      res.status(StatusCodes.INTERNAL_SERVICE_ERROR).send(fetchQuery.err);
+    }
+    
+    res.status(StatusCodes.SUCCESS).send({apps: fetchQuery.rows});
+  } catch (err) {
+    res.status(StatusCodes.BAD_REQUEST).send(err.message);
   }
-
-  if (firstChoice) {
-    params.push(firstChoice);
-    SQLStrings.push(`first_choice=$${++filterCount}`);
-  }
-
-  if (secondChoice) {
-    params.push(secondChoice);
-    SQLStrings.push(`second_choice=$${++filterCount}`);
-  }
-
-  if (thirdChoice) {
-    params.push(thirdChoice);
-    SQLStrings.push(`third_choice=$${++filterCount}`);
-  }
-
-  if (SQLStrings.length) {
-    SQLString += ' WHERE ';
-    SQLString += SQLStrings.join(' AND ');
-  }
-
-  params.push(limit);
-  params.push(offset);
-
-  SQLString += ` ORDER BY id`;
-  SQLString += ` LIMIT $${++filterCount}`;
-  SQLString += ` OFFSET $${++filterCount}`;
-
-  const appQuery = await db.query(SQLString, params);
-  let payload = {};
-
-  if (appQuery.err) {
-    console.log(appQuery.err);
-		res.status(500).send(appQuery.err);
-  }
-
-	payload.apps = appQuery.rows;
-
-  res.status(200).send(payload);
 })
 
 /* fetches a single application */
@@ -84,18 +46,17 @@ router.get('/:username', passport.authenticate('jwt-1', { session: false }), asy
 router.post('/create', async (req, res) => {
   const newApp = req.body
 
-  const response = ApplicationInstance.createApplication(newApp)
-    .then(response => {
-      return response;
-    }).catch(err => {
-      return {err};
-    });
+  try {
+    const createAppQuery = await ApplicationsInstance.createApplications(newApp);
 
-  if (response.err) {
-	  res.status(500).send(response.err);
+    if (createAppQuery.err) {
+      res.status(StatusCodes.INTERNAL_SERVICE_ERROR).send(createAppQuery.err);
+    }
+    
+    res.status(StatusCodes.CREATE_SUCCESS).send();
+  } catch (err) {
+    res.status(StatusCodes.BAD_REQUEST).send(err.message);
   }
-
-  res.status(201).send("Application created.");
 })
 
 module.exports = router;
