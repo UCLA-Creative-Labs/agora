@@ -4,6 +4,7 @@ const router = new Router();
 const db = require('../db');
 const {passport} = require('./login');
 const {strings} = require('../utils/index');
+const ApplicationInstance = require('../db/applications');
 
 /* generic application fetching */
 router.post('/fetch', async (req, res) => {
@@ -83,16 +84,18 @@ router.get('/:username', passport.authenticate('jwt-1', { session: false }), asy
 router.post('/create', async (req, res) => {
   const newApp = req.body
 
-  const params = [ newApp.last_name, newApp.first_name, newApp.email, 
-                   newApp.response, newApp.year, newApp.first_choice ];
-  const createAppQuery = await db.query('INSERT INTO apps (last_name, first_name, email, response, year, first_choice) VALUES ($1, $2, $3, $4, $5, $6)', params);
-  
+  const response = ApplicationInstance.createApplication(newApp)
+    .then(response => {
+      return response;
+    }).catch(err => {
+      return {err};
+    });
 
-  if (createAppQuery.err) {
-	  res.status(500).send(createAppQuery.err);
+  if (response.err) {
+	  res.status(500).send(response.err);
   }
-  
-  res.status(201).send();
+
+  res.status(201).send("Application created.");
 })
 
 module.exports = router;
