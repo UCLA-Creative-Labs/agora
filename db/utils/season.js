@@ -1,7 +1,7 @@
 const SEASON_DATES = {
-  'FALL_2018': new Date('September 15, 2018 00:01:00'),
-  'WINTER_2019': new Date('December 26, 2018 00:01:00')
-}
+  FALL_2018: new Date("September 15, 2018 00:01:00"),
+  WINTER_2019: new Date("December 26, 2018 00:01:00")
+};
 
 class Season {
   constructor(seasons) {
@@ -16,10 +16,12 @@ class Season {
     for (const season of Object.keys(this.seasons)) {
       const date = this.seasons[season];
 
-      if (!dateDifference || !currentSeason ||
-         (currentDate-date > 0 && currentDate-date < dateDifference)) 
-      {
-        dateDifference = currentDate-date;
+      if (
+        !dateDifference ||
+        !currentSeason ||
+        (currentDate - date > 0 && currentDate - date < dateDifference)
+      ) {
+        dateDifference = currentDate - date;
         currentSeason = season;
       }
     }
