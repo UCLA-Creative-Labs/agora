@@ -51,7 +51,9 @@ const createAppSQLString = `
 		year INTEGER,
     first_choice VARCHAR(50),
     second_choice VARCHAR(50),
-    third_choice VARCHAR(50)
+		third_choice VARCHAR(50),
+		links VARCHAR(250),
+		season VARCHAR(100)
   )`;
 
 client.query(
