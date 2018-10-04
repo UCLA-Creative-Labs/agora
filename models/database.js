@@ -51,7 +51,8 @@ const createAppSQLString = `
 		why_third_choice VARCHAR(500),
 		see_creative_labs VARCHAR(500),
 		links VARCHAR(500),
-		creativity VARCHAR(500)
+		creativity VARCHAR(500),
+		season VARCHAR(100)
   )`;
 
 client.query(createAppSQLString, (err, res) => {
