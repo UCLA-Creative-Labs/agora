@@ -16,27 +16,36 @@ class Sheets {
   }
 
   createApplication({
-    firstName,
-    lastName,
+    name,
     email,
-    response,
     year,
-    firstChoice,
-    links
+    pastProject,
+    firstChoiceProject,
+    secondChoiceProject,
+    thirdChoiceProject,
+    whyFirstChoice,
+    whySecondChoice,
+    whyThirdChoice,
+    seeCreativeLabs,
+    links,
+    creativity
   }) {
-    if (!firstName | !lastName | !email | !response | !year | !firstChoice) {
-      throw new Error("Missing Field.");
-    }
-
     const season = Season.getCurrentSeason();
 
     const params = [
-      firstName + " " + lastName,
+      name,
       email,
-      response,
       year,
-      firstChoice,
+      pastProject,
+      firstChoiceProject,
+      secondChoiceProject,
+      thirdChoiceProject,
+      whyFirstChoice,
+      whySecondChoice,
+      whyThirdChoice,
+      seeCreativeLabs,
       links,
+      creativity,
       season
     ];
 
@@ -58,8 +67,6 @@ class Sheets {
             console.log("The API returned an error: " + err);
             return;
           }
-
-          console.log(JSON.stringify(response, null, 2));
         }
       );
     }
