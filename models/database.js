@@ -42,16 +42,16 @@ const createAppSQLString = `
 		name VARCHAR(50),
 		email VARCHAR(50),
 		year VARCHAR(5),
-		past_project VARCHAR(500),
+		past_project VARCHAR(1200),
     first_choice VARCHAR(50),
     second_choice VARCHAR(50),
 		third_choice VARCHAR(50),
-		why_first_choice VARCHAR(500),
-		why_second_choice VARCHAR(500),
-		why_third_choice VARCHAR(500),
-		see_creative_labs VARCHAR(500),
-		links VARCHAR(500),
-		creativity VARCHAR(500),
+		why_first_choice VARCHAR(1200),
+		why_second_choice VARCHAR(1200),
+		why_third_choice VARCHAR(1200),
+		see_creative_labs VARCHAR(1200),
+		links VARCHAR(1200),
+		creativity VARCHAR(1200),
 		season VARCHAR(100)
   )`;
 
